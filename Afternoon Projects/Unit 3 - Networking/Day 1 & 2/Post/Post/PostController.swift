@@ -16,8 +16,9 @@ class PostController: Codable {
     
     // MARK: - SoT
     
+    var posts: [Post] = []
     
-    func fetchPosts(completion: @escaping([Post]) -> Void) {
+    func fetchPosts(completion: @escaping() -> Void) {
         
         guard let unwrappedURL = baseURL else { return }
         
@@ -33,7 +34,7 @@ class PostController: Codable {
        
             if let error = error {
                 print(error)
-                completion([]);
+                completion();
                 return
             }
             
@@ -46,7 +47,8 @@ class PostController: Codable {
                 let postsDictionary = try jsonDecoder.decode([String: Post].self, from: data)
                 var posts = postsDictionary.compactMap({ $0.value })
                 posts.sort(by: { $0.timestamp > $1.timestamp })
-                completion(posts)
+                self.posts = posts
+                completion()
                 
             } catch let error {
                 print(error)
